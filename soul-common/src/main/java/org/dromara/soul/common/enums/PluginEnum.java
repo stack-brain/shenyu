@@ -65,6 +65,11 @@ public enum PluginEnum {
      * Redirect plugin enum.
      */
     REDIRECT(40, 0, "redirect"),
+
+    /**
+     * Request plugin enum.
+     */
+    REQUEST(42, 0, "request"),
     
     /**
      * Hystrix plugin enum.
