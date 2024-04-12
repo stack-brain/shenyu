@@ -81,7 +81,7 @@ public class SpringCloudPlugin extends AbstractSoulPlugin {
         }
         final URI uri = loadBalancer.reconstructURI(serviceInstance, URI.create(soulContext.getRealUrl()));
 
-        String realURL = buildRealURL(uri.toASCIIString(), soulContext.getHttpMethod(), exchange.getRequest().getURI().getQuery());
+        String realURL = buildRealURL(uri, exchange, exchange.getRequest().getURI().getQuery());
 
         exchange.getAttributes().put(Constants.HTTP_URL, realURL);
         //set time out.
@@ -121,8 +121,13 @@ public class SpringCloudPlugin extends AbstractSoulPlugin {
         return FallbackUtils.getNoRuleResult(pluginName, exchange);
     }
 
-    private String buildRealURL(final String url, final String httpMethod, final String query) {
-        if (httpMethod.equals(HttpMethod.GET.name()) && StringUtils.isNotBlank(query)) {
+    private String buildRealURL(final URI uri, final ServerWebExchange exchange, final String query) {
+        String url = uri.toASCIIString();
+        final String rewriteURI = (String) exchange.getAttributes().get(Constants.REWRITE_URI);
+        if (StringUtils.isNotBlank(rewriteURI)) {
+            url = url.replace(uri.getPath(), rewriteURI);
+        }
+        if (StringUtils.isNotBlank(query)) {
             return url + "?" + query;
         }
         return url;
